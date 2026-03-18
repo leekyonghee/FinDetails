@@ -109,6 +109,13 @@ function Crumb({items, onNav}) {
 const TABS = ['대시보드','매출분석','지출분석','미수금','데이터입력'];
 
 export default function App() {
+  // Auth state
+  const [authed, setAuthed] = useState(false);
+  const [pw, setPw] = useState('');
+  const [pwError, setPwError] = useState(false);
+  const PASSWORD = 'bigfish2026';
+
+  // All other state (must be before any conditional return)
   const [tab, setTab] = useState(0);
   const [yr, setYr] = useState('all');
   const [added, setAdded] = useState([]);
@@ -116,6 +123,25 @@ export default function App() {
   const [mode, setMode] = useState('paste');
   const [learned, setLearned] = useState({});
   const [loaded, setLoaded] = useState(false);
+  const [expMonth, setExpMonth] = useState(null);
+  const [expCat, setExpCat] = useState(null);
+  const [incMonth, setIncMonth] = useState(null);
+  const [incCat, setIncCat] = useState(null);
+
+  const handleLogin = () => {
+    if (pw === PASSWORD) {
+      setAuthed(true);
+      setPwError(false);
+      try { sessionStorage.setItem('bf_auth', '1'); } catch(e) {}
+    } else {
+      setPwError(true);
+    }
+  };
+
+  // Check session auth
+  useEffect(() => {
+    try { if (sessionStorage.getItem('bf_auth') === '1') setAuthed(true); } catch(e) {}
+  }, []);
 
   // Load saved data from localStorage on mount
   useEffect(() => {
@@ -136,11 +162,23 @@ export default function App() {
       localStorage.setItem('bf_learned', JSON.stringify(learned));
     } catch(e) {}
   }, [added, learned, loaded]);
-  // Drill-down states
-  const [expMonth, setExpMonth] = useState(null);   // selected month for expense drill
-  const [expCat, setExpCat] = useState(null);        // selected category within month
-  const [incMonth, setIncMonth] = useState(null);
-  const [incCat, setIncCat] = useState(null);
+
+  if (!authed) return (
+    <div style={{minHeight:'100vh',background:'#f8fafc',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Pretendard',-apple-system,sans-serif"}}>
+      <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
+      <div style={{background:'#fff',borderRadius:16,padding:'48px 40px',border:'1px solid #e2e8f0',boxShadow:'0 4px 24px rgba(0,0,0,.06)',width:360,textAlign:'center'}}>
+        <div style={{width:48,height:48,borderRadius:12,background:'linear-gradient(135deg,#2563eb,#7c3aed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,fontWeight:800,color:'#fff',margin:'0 auto 20px'}}>B</div>
+        <h1 style={{margin:'0 0 4px',fontSize:20,fontWeight:700,color:'#1e293b'}}>빅피시 결산 대시보드</h1>
+        <p style={{margin:'0 0 28px',fontSize:13,color:'#94a3b8'}}>접속하려면 비밀번호를 입력하세요</p>
+        <input type="password" value={pw} onChange={e => {setPw(e.target.value);setPwError(false);}} onKeyDown={e => e.key==='Enter' && handleLogin()}
+          placeholder="비밀번호 입력" style={{width:'100%',padding:'12px 16px',borderRadius:8,border:'1px solid '+(pwError?'#ef4444':'#e2e8f0'),fontSize:14,boxSizing:'border-box',outline:'none',background:pwError?'#fef2f2':'#f8fafc',transition:'all .2s'}}/>
+        {pwError && <p style={{margin:'8px 0 0',fontSize:12,color:'#ef4444'}}>비밀번호가 틀렸습니다</p>}
+        <button onClick={handleLogin} style={{width:'100%',padding:'12px',borderRadius:8,border:'none',background:'#2563eb',color:'#fff',fontSize:14,fontWeight:600,cursor:'pointer',marginTop:16}}>로그인</button>
+      </div>
+    </div>
+  );
+
+  // Drill-down states are declared above with other hooks
 
   const data = useMemo(() => {
     const base = {monthly:[...D.monthly], e:JSON.parse(JSON.stringify(D.e)), i:JSON.parse(JSON.stringify(D.i)), s:[...D.s]};
