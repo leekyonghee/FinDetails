@@ -1,6 +1,5 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: 'export',
-  images: { unoptimized: true },
+import Dashboard from './Dashboard'
+
+export default function Page() {
+  return <Dashboard />
 }
-module.exports = nextConfig
