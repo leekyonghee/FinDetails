@@ -163,23 +163,6 @@ export default function App() {
     } catch(e) {}
   }, [added, learned, loaded]);
 
-  if (!authed) return (
-    <div style={{minHeight:'100vh',background:'#f8fafc',display:'flex',alignItems:'center',justifyContent:'center',fontFamily:"'Pretendard',-apple-system,sans-serif"}}>
-      <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
-      <div style={{background:'#fff',borderRadius:16,padding:'48px 40px',border:'1px solid #e2e8f0',boxShadow:'0 4px 24px rgba(0,0,0,.06)',width:360,textAlign:'center'}}>
-        <div style={{width:48,height:48,borderRadius:12,background:'linear-gradient(135deg,#2563eb,#7c3aed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,fontWeight:800,color:'#fff',margin:'0 auto 20px'}}>B</div>
-        <h1 style={{margin:'0 0 4px',fontSize:20,fontWeight:700,color:'#1e293b'}}>빅피시 결산 대시보드</h1>
-        <p style={{margin:'0 0 28px',fontSize:13,color:'#94a3b8'}}>접속하려면 비밀번호를 입력하세요</p>
-        <input type="password" value={pw} onChange={e => {setPw(e.target.value);setPwError(false);}} onKeyDown={e => e.key==='Enter' && handleLogin()}
-          placeholder="비밀번호 입력" style={{width:'100%',padding:'12px 16px',borderRadius:8,border:'1px solid '+(pwError?'#ef4444':'#e2e8f0'),fontSize:14,boxSizing:'border-box',outline:'none',background:pwError?'#fef2f2':'#f8fafc',transition:'all .2s'}}/>
-        {pwError && <p style={{margin:'8px 0 0',fontSize:12,color:'#ef4444'}}>비밀번호가 틀렸습니다</p>}
-        <button onClick={handleLogin} style={{width:'100%',padding:'12px',borderRadius:8,border:'none',background:'#2563eb',color:'#fff',fontSize:14,fontWeight:600,cursor:'pointer',marginTop:16}}>로그인</button>
-      </div>
-    </div>
-  );
-
-  // Drill-down states are declared above with other hooks
-
   const data = useMemo(() => {
     const base = {monthly:[...D.monthly], e:JSON.parse(JSON.stringify(D.e)), i:JSON.parse(JSON.stringify(D.i)), s:[...D.s]};
     for (const row of added) {
@@ -300,6 +283,19 @@ export default function App() {
   return (
     <div style={{minHeight:'100vh',background:CL.bg,color:CL.tx,fontFamily:"'Pretendard',-apple-system,sans-serif"}}>
       <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
+      {!authed && (
+        <div style={{position:'fixed',inset:0,background:'#f8fafc',display:'flex',alignItems:'center',justifyContent:'center',zIndex:9999}}>
+          <div style={{background:'#fff',borderRadius:16,padding:'48px 40px',border:'1px solid #e2e8f0',boxShadow:'0 4px 24px rgba(0,0,0,.06)',width:360,textAlign:'center'}}>
+            <div style={{width:48,height:48,borderRadius:12,background:'linear-gradient(135deg,#2563eb,#7c3aed)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,fontWeight:800,color:'#fff',margin:'0 auto 20px'}}>B</div>
+            <h1 style={{margin:'0 0 4px',fontSize:20,fontWeight:700,color:'#1e293b'}}>빅피시 결산 대시보드</h1>
+            <p style={{margin:'0 0 28px',fontSize:13,color:'#94a3b8'}}>접속하려면 비밀번호를 입력하세요</p>
+            <input type="password" value={pw} onChange={e => {setPw(e.target.value);setPwError(false);}} onKeyDown={e => e.key==='Enter' && handleLogin()}
+              placeholder="비밀번호 입력" style={{width:'100%',padding:'12px 16px',borderRadius:8,border:'1px solid '+(pwError?'#ef4444':'#e2e8f0'),fontSize:14,boxSizing:'border-box',outline:'none',background:pwError?'#fef2f2':'#f8fafc',transition:'all .2s'}}/>
+            {pwError && <p style={{margin:'8px 0 0',fontSize:12,color:'#ef4444'}}>비밀번호가 틀렸습니다</p>}
+            <button onClick={handleLogin} style={{width:'100%',padding:'12px',borderRadius:8,border:'none',background:'#2563eb',color:'#fff',fontSize:14,fontWeight:600,cursor:'pointer',marginTop:16}}>로그인</button>
+          </div>
+        </div>
+      )}
 
       <header style={{padding:'16px 24px',borderBottom:'1px solid '+CL.bdr,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12,background:CL.card}}>
         <div style={{display:'flex',alignItems:'center',gap:10}}>
